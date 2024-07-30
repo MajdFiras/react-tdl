@@ -9,7 +9,10 @@ import IconButton from "@mui/material/IconButton";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
-export default function Todo() {
+export default function Todo({ todo, handleCheck }) {
+  function handleCheckClick() {
+    handleCheck(todo.id);
+  }
   return (
     <>
       <Card
@@ -25,10 +28,10 @@ export default function Todo() {
           <Grid container spacing={2}>
             <Grid xs={8}>
               <Typography variant="h5" sx={{ textAlign: "right" }}>
-                المهمة الأولى
+                {todo.title}
               </Typography>
               <Typography variant="h6" sx={{ textAlign: "right" }}>
-                التفاصيل الخاصة بالمهمة الأولى
+                {todo.details}
               </Typography>
             </Grid>
             <Grid
@@ -38,11 +41,14 @@ export default function Todo() {
               alignItems="center"
             >
               <IconButton
+                onClick={() => {
+                  handleCheckClick();
+                }}
                 className="iconButton"
                 aria-label="check"
                 style={{
-                  color: "#8bc34a",
-                  background: "white",
+                  color: todo.isCompleted ? "white" : "#8bc34a",
+                  background: todo.isCompleted ? "#8bc34a" : "white",
                   border: "solid #8bc34a 3px",
                 }}
               >
