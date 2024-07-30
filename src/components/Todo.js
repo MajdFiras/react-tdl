@@ -9,10 +9,27 @@ import IconButton from "@mui/material/IconButton";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { useContext } from "react";
+import { useState } from "react";
+
 import { TodosContext } from "../contexts/todosContext";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 export default function Todo({ todo, handleCheck }) {
   const { todos, setTodos } = useContext(TodosContext);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  function handelDeleteClick() {
+    setShowDeleteAlert(true);
+  }
+  function handleDeleteConfirm() {
+    const updatedTodos = todos.filter((t) => {
+      return t.id != todo.id;
+    });
+    setTodos(updatedTodos);
+  }
   function handleCheckClick() {
     const updatedTodos = todos.map((t) => {
       if (t.id == todo.id) {
@@ -22,8 +39,36 @@ export default function Todo({ todo, handleCheck }) {
     });
     setTodos(updatedTodos);
   }
+
+  function handleClose() {
+    setShowDeleteAlert(false);
+  }
   return (
     <>
+      {/* Dialog */}
+      <Dialog
+        style={{ direction: "rtl" }}
+        onClose={handleClose}
+        open={showDeleteAlert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          هل انت متأكد من حذف مهمتك؟
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            قم بالضغط على موافق حتى تحذف مهمتك. لايمكتك التراجع بعد الضغط
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>اغلاق</Button>
+          <Button onClick={handleDeleteConfirm} autoFocus>
+            موافق
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* End of Dialog */}
       <Card
         className="todo-card"
         sx={{
@@ -76,6 +121,7 @@ export default function Todo({ todo, handleCheck }) {
                 <ModeEditOutlinedIcon />
               </IconButton>
               <IconButton
+                onClick={handelDeleteClick}
                 className="iconButton"
                 aria-label="check"
                 style={{
