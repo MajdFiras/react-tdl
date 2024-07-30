@@ -11,6 +11,8 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
+import { useContext } from "react";
+import { TodosContext } from "../contexts/todosContext";
 import { v4 as uuidv4 } from "uuid";
 
 // Icons
@@ -23,42 +25,12 @@ import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
 import Todo from "./Todo";
 import { useState } from "react";
 
-const initialTodos = [
-  {
-    id: uuidv4(),
-    title: "مراجعة لمادة جامعية",
-    details: "مراجعة لمادة الهندسة ",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "تعلم رياكت",
-    details: "انشاء مشروع في رياكت",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "قراءة كتاب",
-    details: "قراءة كتاب من المكتبة",
-    isCompleted: false,
-  },
-];
-
 export default function TodoList() {
-  const [todos, setTodos] = useState(initialTodos);
+  const { todos, setTodos } = useContext(TodosContext);
   const [titleInput, setTitleInput] = useState("");
 
-  function handleCheckClick(todoId) {
-    const updatedTodos = todos.map((t) => {
-      if (t.id == todoId) {
-        t.isCompleted = !t.isCompleted;
-      }
-      return t;
-    });
-    setTodos(updatedTodos);
-  }
   const todosJSX = todos.map((t) => {
-    return <Todo key={t.id} todo={t} handleCheck={handleCheckClick} />;
+    return <Todo key={t.id} todo={t} />;
   });
 
   function handleAddClick() {
