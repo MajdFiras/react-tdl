@@ -17,10 +17,15 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
+import TextField from "@mui/material/TextField";
 export default function Todo({ todo, handleCheck }) {
   const { todos, setTodos } = useContext(TodosContext);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [updatedTodo, setUpdatedTodo] = useState({
+    title: todo.title,
+    details: todo.details,
+  });
   function handelDeleteClick() {
     setShowDeleteAlert(true);
   }
@@ -29,6 +34,18 @@ export default function Todo({ todo, handleCheck }) {
       return t.id != todo.id;
     });
     setTodos(updatedTodos);
+  }
+
+  function handleUpdateConfirm() {
+    const updatedTodos = todos.map((t) => {
+      if (t.id == todo.id) {
+        return { ...t, title: updatedTodo.title, details: updatedTodo.details };
+      } else {
+        return t;
+      }
+    });
+    setTodos(updatedTodos);
+    setShowUpdateDialog(false);
   }
   function handleCheckClick() {
     const updatedTodos = todos.map((t) => {
@@ -40,15 +57,24 @@ export default function Todo({ todo, handleCheck }) {
     setTodos(updatedTodos);
   }
 
-  function handleClose() {
+  function handelUpdateClick() {
+    setShowUpdateDialog(true);
+  }
+
+  function handleDeleteDialogClose() {
     setShowDeleteAlert(false);
   }
+
+  function handleUpdateDialogClose() {
+    setShowUpdateDialog(false);
+  }
+
   return (
     <>
-      {/* Dialog */}
+      {/* Delete Dialog */}
       <Dialog
         style={{ direction: "rtl" }}
-        onClose={handleClose}
+        onClose={handleDeleteDialogClose}
         open={showDeleteAlert}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -62,13 +88,61 @@ export default function Todo({ todo, handleCheck }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>اغلاق</Button>
+          <Button onClick={handleDeleteDialogClose}>اغلاق</Button>
           <Button onClick={handleDeleteConfirm} autoFocus>
             موافق
           </Button>
         </DialogActions>
       </Dialog>
-      {/* End of Dialog */}
+      {/* End of Delete Dialog */}
+
+      {/* Update Dialgo */}
+      <Dialog
+        style={{ direction: "rtl" }}
+        onClose={handleUpdateDialogClose}
+        open={showUpdateDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">تعديل المهمة</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="name"
+            name="email"
+            label="عنوان المهمة"
+            fullWidth
+            variant="standard"
+            value={updatedTodo.title}
+            onChange={(e) => {
+              setUpdatedTodo({ ...updatedTodo, title: e.target.value });
+            }}
+          />
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="name"
+            name="email"
+            label="التفاصيل "
+            fullWidth
+            variant="standard"
+            value={updatedTodo.details}
+            onChange={(e) => {
+              setUpdatedTodo({ ...updatedTodo, details: e.target.value });
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleUpdateDialogClose}>اغلاق</Button>
+          <Button onClick={handleUpdateConfirm} autoFocus>
+            موافق
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* End of Update Dialog */}
       <Card
         className="todo-card"
         sx={{
@@ -110,6 +184,7 @@ export default function Todo({ todo, handleCheck }) {
               </IconButton>
 
               <IconButton
+                onClick={handelUpdateClick}
                 className="iconButton"
                 aria-label="check"
                 style={{
